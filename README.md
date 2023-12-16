@@ -1,52 +1,95 @@
 # Synchly backups
 
-
 ![version](https://img.shields.io/github/package-json/v/hariprasanths/synchly?color=blue)
 ![Node Version](https://img.shields.io/node/v/synchly)
 [![Documentation](https://img.shields.io/badge/documentation-yes-brightgreen.svg)](https://github.com/hariprasanths/synchly/blob/master/docs)
 [![License: Apache-2.0](https://img.shields.io/github/license/hariprasanths/synchly)](https://github.com/hariprasanths/synchly/blob/master/LICENSE)
 
-
-* [Description](#description)
-* [Features](#features)
-* [Prerequisites](#prerequisites)
-* [Installation](#installation)
-* [Tab completion](#tab-completion)
-* [Usage](#usage)
-* [Quick setup](#quick-setup)
-* [List of options](#list-of-options)
-* [Running as a daemon](#running-as-a-daemon)
-* [Examples](#examples)
-* [Contributing](#contributing)
-* [Show your support](#show-your-support)
-* [License](#license)
-
+- [Description](#description)
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Tab completion](#tab-completion)
+- [Usage](#usage)
+- [Quick setup](#quick-setup)
+- [List of options](#list-of-options)
+- [Running as a daemon](#running-as-a-daemon)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [Show your support](#show-your-support)
+- [License](#license)
 
 ## Description
+
 Automate database backups with customizable recurring schedules.
 
 ## Features
 
-* **Backup scheme** - Synchly uses a [Grandfather-father-son backup rotation scheme](https://en.wikipedia.org/wiki/Backup_rotation_scheme#Grandfather-father-son) (daily, weekly, monthly) that is fully customizable. <br/>Default schedule: 7 dailies + 8 weeklies + 6 monthlies (at max there will be 21 backups at a given instant).
-* **Flexible scheduling** - Schedule the daily backups to fit your maintenance and development schedule, so that you get a clear picture of your database backups over time.
-* **Supported Databases**
-    * MySQL
-    * MongoDB
-    * PostgreSQL
-* **Compression** - Compress the database backups to save up space.
-* **Cloud Storage Integration** - Sync the local backups to remote storage of your choice.
-* **Restoration** - Restore the database from the backups.
-* **Supported remote storages**
-    * Google Drive
-    * SFTP
-    * S3
-* **Status notifications** - Get daily status reports for successful and failed backups, delivered when you want them via SMTP to the specified email(s). Check [Usage](#usage) and the [List of Options](#list-of-options) below.
-* **Multiple Backup Jobs** - Run multiple backup jobs in parallel. 
-* **Encryption** - Encrypt the job configuration and backup files.
+- **Backup scheme** - Synchly uses a [Grandfather-father-son backup rotation scheme](https://en.wikipedia.org/wiki/Backup_rotation_scheme#Grandfather-father-son) (daily, weekly, monthly) that is fully customizable. <br/>Default schedule: 7 dailies + 8 weeklies + 6 monthlies (at max there will be 21 backups at a given instant).
+- **Flexible scheduling** - Schedule the daily backups to fit your maintenance and development schedule, so that you get a clear picture of your database backups over time.
+- **Supported Databases**
+  - MySQL
+  - MongoDB
+  - PostgreSQL
+- **Compression** - Compress the database backups to save up space.
+- **Cloud Storage Integration** - Sync the local backups to remote storage of your choice.
+- **Restoration** - Restore the database from the backups.
+- **Supported remote storages**
+  - Google Drive
+  - SFTP
+  - S3
+- **Status notifications** - Get daily status reports for successful and failed backups, delivered when you want them via SMTP to the specified email(s). Check [Usage](#usage) and the [List of Options](#list-of-options) below.
+- **Multiple Backup Jobs** - Run multiple backup jobs in parallel.
+- **Encryption** - Encrypt the job configuration and backup files.
+
+## Synchly Docker Usage Guide
+
+This guide helps you use Synchly with Docker to synchronize directories.
 
 ## Prerequisites
 
-* node >=8
+- Docker installed on your system.
+
+## Usage
+
+### 1. Start the Synchly Container
+
+Run the following command to start the Synchly container in the background:
+
+```bash
+docker run -d \
+    -v /:/app/subsystem \
+    --name synchly_container \
+    umer2001/synchly:latest
+```
+
+This command starts the container and mounts your root directory (/) as /app/subsystem within the container.
+
+### 2. Run Configuration Commands
+
+Use docker exec to execute configuration commands or any other desired commands within the Synchly container. For instance:
+
+```bash
+docker exec synchly_container <command>
+# example
+docker exec synchly_container synchly --config=db --file /workspaces/synchly/configs/postgres.json
+```
+
+Replace `<command>` with your specific Synchly command.
+
+### 3. Post-Configuration Commands
+
+**IMPORTANT:** After creating or updating a configuration file, execute the following command to ensure Synchly is running:
+
+```bash
+docker exec -d synchly_container synchly --start
+```
+
+This command restarts Synchly to apply any new configurations or changes made
+
+## Prerequisites
+
+- node >=8
 
 ## Installation
 
@@ -251,29 +294,29 @@ The `WorkingDirectory` field in the `synchly.service` unit file also needs to be
 
 ### If installed using yarn:
 
-If installed using yarn global, the service init files will be located on 
-* `/usr/local/share/.config/yarn/global/node_modules/synchly/bin/` - if logged in as root
-* `~/.config/yarn/global/node_modules/synchly/bin` - if logged in as non-root
+If installed using yarn global, the service init files will be located on
 
+- `/usr/local/share/.config/yarn/global/node_modules/synchly/bin/` - if logged in as root
+- `~/.config/yarn/global/node_modules/synchly/bin` - if logged in as non-root
 
 **NOTE: Don't forget to restart the daemon everytime you make a change to the configuration using the [cli options](#list-of-options).**
 
 ## Examples
 
-* [Database configuration](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#database-configuration)
-    * [MongoDB](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#mongodb)
-    * [MySQL](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#mysql)
-    * [PostgreSQL](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#postgresql)
-* [Cloud Storage (remote-sync) configuration](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#cloud-storage-remote-sync-configuration)
-    * [Google Drive](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#google-drive)
-    * [SFTP](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#sftp)
-    * [S3](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#s3)
-* [Status notifications (smtp) configuration](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#status-notifications-smtp-configuration)
-    * [Using Gmail](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#using-gmail)
-* [Enabling modules](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#enabling-modules)
-* [Disabling modules](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#disabling-modules)
-* [Stacktrace of errors](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#stacktrace-of-errors)
-* [Running multiple jobs](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#running-multiple-jobs)
+- [Database configuration](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#database-configuration)
+  - [MongoDB](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#mongodb)
+  - [MySQL](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#mysql)
+  - [PostgreSQL](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#postgresql)
+- [Cloud Storage (remote-sync) configuration](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#cloud-storage-remote-sync-configuration)
+  - [Google Drive](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#google-drive)
+  - [SFTP](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#sftp)
+  - [S3](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#s3)
+- [Status notifications (smtp) configuration](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#status-notifications-smtp-configuration)
+  - [Using Gmail](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#using-gmail)
+- [Enabling modules](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#enabling-modules)
+- [Disabling modules](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#disabling-modules)
+- [Stacktrace of errors](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#stacktrace-of-errors)
+- [Running multiple jobs](https://github.com/hariprasanths/synchly/blob/master/docs/examples.md#running-multiple-jobs)
 
 ## Contributing
 
