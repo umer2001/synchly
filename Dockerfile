@@ -48,4 +48,4 @@ RUN cp /app/bin/synchly.conf /etc/ini
 RUN mkdir -p ~/.config/systemd/user/ && cp /app/bin/synchly.service  ~/.config/systemd/user/
 RUN systemctl --user enable synchly
 
-CMD ["synchly", "--start", "--debug"]
+CMD ["bash", "start.sh"]
