@@ -87,6 +87,8 @@ docker exec -d synchly_container synchly --start
 
 This command restarts Synchly to apply any new configurations or changes made
 
+## Synchly Usage Guide
+
 ## Prerequisites
 
 - node >=8
